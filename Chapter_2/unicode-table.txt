@@ -1,0 +1,5 @@
+decimal   hex   chr                    name                  
+-------  -----  ---  ----------------------------------------
+     36     24   $   Dollar Sign
+   8356   20A4   ₤   Lira Sign
+   8378   20BA   ₺   Turkish Lira Sign
