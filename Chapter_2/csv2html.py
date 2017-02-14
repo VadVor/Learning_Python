@@ -26,14 +26,14 @@ def main():
 def print_start(formatt):
     filename = formatt[3]
     with open(filename, "w") as file:
-        file.write("<table border='1'>")
+        file.write("<table border='1'>"+"\n")
         file.close()
 
 
 def print_line(line, color, formatt):
     filename = formatt[3]
     with open(filename, "a") as file:
-        file.write("<tr bgcolor='{0}'>".format(color))
+        file.write("<tr bgcolor='{0}'>".format(color)+"\n")
         numberformat = "<td align='right'>{{0:{0}}}</td>".format(formatt[1])
         fields = extract_fields(line)
         for field in fields:
@@ -43,7 +43,7 @@ def print_line(line, color, formatt):
                 number = field.replace(",", "")
                 try:
                     x = float(number)
-                    file.write(numberformat.format(x))
+                    file.write(numberformat.format(x)+"\n")
                 except ValueError:
                     field = field.title()
                     field = field.replace(" And ", " and ")
@@ -52,8 +52,8 @@ def print_line(line, color, formatt):
                     else:
                         field = "{0} ...".format(
                                 escape(field[:int(formatt[0])]))
-                    file.write("<td>{0}</td>".format(field))
-        file.write("</tr>")
+                    file.write("<td>{0}</td>".format(field)+"\n")
+        file.write("</tr>"+"\n")
         file.close()
 
 
