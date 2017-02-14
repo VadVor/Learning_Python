@@ -1,6 +1,6 @@
 from requests import get
 
-ip = '178.168.207.5'
+ip = '178.168.207.6'
 
 latlong = get('https://ipapi.co/{}/latlong/'.format(ip)).text.split(',')
 
