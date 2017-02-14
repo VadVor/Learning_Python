@@ -2,7 +2,7 @@ import collections
 
 Sale = collections.namedtuple("Sale", "productid customerid date quantity price")
 sales = []
-sales.extend(Sale(432, 921, "20080914", 3, 7.99))
+sales.append(Sale(432, 921, "20080914", 3, 7.99))
 sales.append(Sale(419, 874, "20080915", 1, 18.49))
 Aircraft = collections.namedtuple("Aircraft", "manufacturer model seating")
 Seating = collections.namedtuple("Seating", "minimum maximum")
