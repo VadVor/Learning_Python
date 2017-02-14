@@ -106,7 +106,7 @@ def process_options():
 def print_end(formatt):
     filename = formatt[3]
     with open(filename, "a") as file:
-        file.write("</table>")
+        file.write("</table>"+"\n")
         file.close()
 
 main()
