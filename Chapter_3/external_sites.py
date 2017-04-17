@@ -3,7 +3,7 @@ import sys
 
 sites = {}
 for filename in sys.argv[1:]:
-    for line in open(filename):
+    for line in open(filename, encoding="UTF-8"):
         i = 0
         while True:
             site = None
