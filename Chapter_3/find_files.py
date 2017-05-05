@@ -3,7 +3,6 @@ import sys
 import fnmatch
 import win32com.client
 
-obj = win32com.client.GetObject("LDAP://DC=asb/DC=bb/DC=f700/OU=fil700")
 obj.Filter = ["Computer"]
 for comp in object:
     print (comp.Name)
