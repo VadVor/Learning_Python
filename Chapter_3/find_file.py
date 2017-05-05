@@ -22,6 +22,8 @@ for root in ['c:\\', 'd:\\']:
                 fullname = os.path.join(folder, filename)
                 with open('d:\qqqqqqqq.txt', "a") as file:
                     file.write(fullname+"\n")
+                    http://hairetdin.blogspot.com.by/2017/02/python-active-directory.html
+                    http://torofimofu.blogspot.com.by/2013/11/ldap-python.html
 file.close() '''
         
     
