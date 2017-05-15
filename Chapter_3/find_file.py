@@ -1,17 +1,38 @@
-import os
-import sys
-import fnmatch
-import win32com.client
+import win32com.client as com
+from multiprocessing import Pool
+from ldap3 import Server, Connection, ALL, SUBTREE 
 
 
-obj.Filter = ["Computer"]
-for comp in object:
-    print (comp.Name)
+def find_files(connect):
+    for entry in connect:
+        try:  
+            ipp = str(entry['attributes']['cn'])
+            wmi = com.GetObject(r"winmgmts:{impersonationLevel=impersonate}!\\" + ipp + r"\root\cimv2")
+            colFiles = wmi.ExecQuery("Select * from CIM_DataFile where (Drive='C:' or Drive='D:') and (Extension='msi' or Extension='iso')")
+            for collect in colFiles:
+                with open("d:\\ScanDir\\"+ ipp + str(entry['attributes']['description']) +".txt" , "a") as file:
+                    file.write(collect.Name+"\n")
+                file.close() 
+        except:
+            continue 
 
-'''for comp in object:
-    with open('d:\ccccccc.txt', "a") as file:
-        file.write(comp.Name+"\n")
-file.close()'''
+if __name__ == '__main__':
+    total_entries = 0
+    server = Server('***', get_info= ALL)
+    conn = Connection(server, user="****", password="****", auto_bind=True)
+    conn.search(search_base = "OU=***,DC=***,DC=bb,DC=***", search_filter ="(&(objectCategory=computer)(name=**00*))", search_scope = SUBTREE, attributes = ['cn', 'description'])
+    total_entries += len(conn.response)
+
+    #find_files(conn.response)
+
+    pool = Pool(1)
+    pool.map(find_files, conn.response)
+    pool.close()
+    pool.join()
+
+
+
+
 
 ''' exclude = ['$Recycle.Bin','d:\$RECYCLE.BIN','Windows'] 
 for root in ['c:\\', 'd:\\']:
@@ -22,8 +43,4 @@ for root in ['c:\\', 'd:\\']:
                 fullname = os.path.join(folder, filename)
                 with open('d:\qqqqqqqq.txt', "a") as file:
                     file.write(fullname+"\n")
-                    http://hairetdin.blogspot.com.by/2017/02/python-active-directory.html
-                    http://torofimofu.blogspot.com.by/2013/11/ldap-python.html
 file.close() '''
-        
-    
