@@ -1,26 +1,28 @@
 import win32com.client as com
 from multiprocessing import Pool
-from ldap3 import Server, Connection, ALL, SUBTREE 
+from ldap3 import Server, Connection, ALL, SUBTREE
 
 
 def find_files(connect):
     for entry in connect:
-        try:  
+        try:
             ipp = str(entry['attributes']['cn'])
             wmi = com.GetObject(r"winmgmts:{impersonationLevel=impersonate}!\\" + ipp + r"\root\cimv2")
-            colFiles = wmi.ExecQuery("Select * from CIM_DataFile where (Drive='C:' or Drive='D:') and (Extension='msi' or Extension='iso')")
-            for collect in colFiles:
-                with open("d:\\ScanDir\\"+ ipp + str(entry['attributes']['description']) +".txt" , "a") as file:
+            colfiles = wmi.ExecQuery("Select * from CIM_DataFile where (Drive='C:' or Drive='D:') and (Extension='msi' "
+                                     "or Extension='iso')")
+            for collect in colfiles:
+                with open("d:\\ScanDir\\"+ ipp + str(entry['attributes']['description'])+".txt", "a") as file:
                     file.write(collect.Name+"\n")
-                file.close() 
+                file.close()
         except:
-            continue 
+            continue
 
 if __name__ == '__main__':
     total_entries = 0
-    server = Server('***', get_info= ALL)
+    server = Server('***', get_info=ALL)
     conn = Connection(server, user="****", password="****", auto_bind=True)
-    conn.search(search_base = "OU=***,DC=***,DC=bb,DC=***", search_filter ="(&(objectCategory=computer)(name=**00*))", search_scope = SUBTREE, attributes = ['cn', 'description'])
+    conn.search(search_base="OU=***,DC=***,DC=bb,DC=***", search_filter="(&(objectCategory=computer)(name=**00*))",
+                search_scope=SUBTREE, attributes=['cn', 'description'])
     total_entries += len(conn.response)
 
     #find_files(conn.response)
@@ -44,3 +46,5 @@ for root in ['c:\\', 'd:\\']:
                 with open('d:\qqqqqqqq.txt', "a") as file:
                     file.write(fullname+"\n")
 file.close() '''
+        
+    
