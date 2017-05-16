@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     #find_files(conn.response)
 
-    pool = Pool(1)
+    pool = Pool()
     pool.map(find_files, conn.response)
     pool.close()
     pool.join()
