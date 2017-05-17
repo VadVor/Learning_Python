@@ -21,14 +21,23 @@ if __name__ == '__main__':
     server = Server('***', get_info= ALL)
     conn = Connection(server, user="****", password="****", auto_bind=True)
     conn.search(search_base = "OU=***,DC=***,DC=bb,DC=***", search_filter ="(&(objectCategory=computer)(name=**00*))", search_scope = SUBTREE, attributes = ['cn', 'description'])
+    conn2= [conn.response[i:i + 379] for i in range(0, len(conn.response), 379)]  
     total_entries += len(conn.response)
 
     #find_files(conn.response)
 
-    pool = Pool()
-    pool.map(find_files, conn.response)
-    pool.close()
-    pool.join()
+    for entry in conn2[0]:
+        try:  
+            ipp = str(entry['attributes']['cn'])
+            #p = multiprocessing.Process (target=find_files, args = (ipp,))
+            #jobs.append(p)
+            #p.start()
+            #pool = Pool()
+            #pool.map(find_files, ipp)
+            #pool.close()
+            #pool.join() 
+        except:
+            continue
 
 
 
