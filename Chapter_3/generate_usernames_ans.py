@@ -43,19 +43,33 @@ def generate_username(fields, usernames):
 def print_users(users):
     namewidth = 17
     usernamewidth = 9
-    print("{0:<{nw}} {1:^6} {2:{uw}}".format("Name", "ID", "Username", nw=namewidth, uw=usernamewidth))
-    print("{0:-<{nw}} {0:-<6} {0:-<{uw}}".format("", nw=namewidth, uw=usernamewidth))
+    list_for_print = []
+    head1="{0:<{nw}} {1:^6} {2:{uw}}".format("Name", "ID", "Username", nw=namewidth, uw=usernamewidth)
+    head2="{0:-<{nw}} {0:-<6} {0:-<{uw}}".format("", nw=namewidth, uw=usernamewidth)
+    print(head1+'   '+head1)
+    print(head2+'   '+head2)
     for key in sorted(users):
         user = users[key]
         initial = ""
         if user.middlename:
             initial = " " + user.middlename[0]
         name = "{0.surname}, {0.forename}{1}".format(user, initial)
-        name_length = len(name)
-        if name_length >= 17:
-            print("{0:.17} ({1.id:4}) {1.username:{uw}}".format(name, user, nw=namewidth, uw=usernamewidth))
+        langth_name = len(name)
+        if langth_name<=17:
+            list_for_print.append("{0:.<{nw}} ({1.id:4}) {1.username:{uw}}".format(name, user, nw=namewidth, uw=usernamewidth))
         else:
-            print("{0:.<{nw}} ({1.id:4}) {1.username:{uw}}".format(name, user, nw=namewidth, uw=usernamewidth))
+            list_for_print.append("{0:.{nw}} ({1.id:4}) {1.username:{uw}}".format(name, user, nw=namewidth, uw=usernamewidth))
+    j = 0
+    for t in zip(list_for_print[1::2],list_for_print[::2]):
+        if j <= 61: 
+            print('   '.join(t))
+            j+=1
+        else:
+            print('\f')
+            print(head1+'   '+head1)
+            print(head2+'   '+head2)
+            print('   '.join(t))
+            j=0
 
 main()
 
