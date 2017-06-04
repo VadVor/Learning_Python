@@ -21,7 +21,10 @@ HTML_TEMPLATE = """<?xml version="1.0"?>
 </html>
 """
 
-class CancelledError(Exception): pass
+
+class CancelledError(Exception):
+    pass
+
 
 def main():
     information = dict(name=None, year=datetime.date.today().year, filename=None, title=None, description=None,
@@ -36,6 +39,7 @@ def main():
         if get_string("\nCreate another (y/n)?", default="y").lower() not in {"y", "yes"}:
             break
 
+
 def populate_information(information):
     name = get_string("Enter your name (for copyright)", "name", information["name"])
     if not name:
@@ -48,6 +52,90 @@ def populate_information(information):
         raise CancelledError()
     if not filename.endswith((".htm", ".html")):
         filename += ".html"
+    title = get_string("Enter title", "title")
+    if not title:
+        raise CancelledError()
+    description = get_string("Enter description (optional)", "description")
+    keywords = []
+    while True:
+        keyword = get_string("Enter a keyword (optional)", "keyword")
+        if keyword:
+            keywords.append(keyword)
+        else:
+            break
+    stylesheet = get_string("Enter the stylesheet filename (optional)", "stylesheet")
+    if stylesheet and not stylesheet.endswith(".css"):
+        stylesheet += ".css"
     information.update(name=name, year=year, filename=filename, title=title, description=description,
                        keywords=keywords, stylesheet=stylesheet)
 
+
+def make_html_skeleton(year, name, title, description, keywords, stylesheet, filename):
+    copyright = COPYRIGHT_TEMPLATE.format(year, xml.sax.saxutils.escape(name))
+    title = xml.sax.saxutils.escape(title)
+    description = xml.sax.saxutils.escape(description)
+    keywords = ",".join([xml.sax.saxutils.escape(k) for k in keywords]) if keywords else ""
+    stylesheet = (STYLESHEET_TEMPLETE.format(stylesheet) if stylesheet else "")
+    html = HTML_TEMPLATE.format(title=title, copyright=copyright, description=description, keywords=keywords,
+                                stylesheet=stylesheet)
+    fh = None
+    try:
+        fh = open(filename, "w", encoding="utf-8")
+        fh.write(html)
+    except EnvironmentError as err:
+        print("ERROR", err)
+    else:
+        print("Saved skeleton", filename)
+    finally:
+        if fh is not None:
+            fh.close()
+
+
+def get_string(message, name="string", default=None, minimum_length=0, maximum_length=80):
+    message += ": " if default is None else " [{0}]: ".format(default)
+    while True:
+        try:
+            line = input(message)
+            if not line:
+                if default is not None:
+                    return default
+                if minimum_length == 0:
+                    return ""
+                else:
+                    raise ValueError("{0} may not be empty".format(name))
+            if not (minimum_length <= len(line) <= maximum_length):
+                raise ValueError("{0} must have at least {1} and at most {2} characters".format(name, minimum_length,
+                                                                                                maximum_length))
+            return line
+        except ValueError as err:
+            print("ERROR", err)
+
+
+def get_integer(message, name="integer", default=None, minimum=0, maximum=100, allow_zero=True):
+
+    class RangeError(Exception):
+        pass
+
+    message += ": " if default is None else " [{0}]: ".format(default)
+    while True:
+        try:
+            line = input(message)
+            if not line and default is not None:
+                return default
+            i = int(line)
+            if i == 0:
+                if allow_zero:
+                    return i
+                else:
+                    raise RangeError("{0} may not be 0".format(name))
+            if not (minimum <= i <= maximum):
+                raise RangeError("{name} must be between {minimum} and {maximum} inclusive{0}".format(
+                    " (or 0)" if allow_zero else "", **locals()))
+            return i
+        except RangeError as err:
+            print("ERROR", err)
+        except ValueError as err:
+            print("ERROR {0} must be an integer".format(name))
+
+
+main()
