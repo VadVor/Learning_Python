@@ -24,13 +24,40 @@ def get_string(message, name="string", default=None, minimum_length=0, maximum_l
         except ValueError as err:
             print("ERROR", err)
 
-list_files = [name for name in os.listdir(".") if os.path.isfile(name) in {".lst"}]
-if len(list_files) == 0:
+def add_new_file_name():
     filename = get_string("Choose file name: ", "filename")
     if not filename:
         raise CancelledError()
     if not filename.endswith(".lst"):
         filename += ".lst"
     print("\n--No items are in the list--")
+    return filename                    
+
+def read_record_file(add_new_file_name):
     new_file = get_string("[A]dd [Q]uit", "new_file", default="a")
-print(list_files)
+    list_items= []
+    action_items= None
+    while True:
+        if new_file in {"a", "A"} or action_items in {"a", "A"} :
+            add_string=get_string("Add item ", "add_string")
+            list_items.append(add_string)
+            for l, item in enumerate(list_items,start=1):
+                print("{0}. {1}".format(l,item))
+            action_items=get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
+            return True
+        elif action_items in {"d", "D"}:
+            del_string=get_string("Delete item number (or 0 to cancel)", "del_string")
+            
+        
+    return True
+    
+list_files = [name for name in os.listdir(".") if name.endswith(".lst")]
+if len(list_files) == 0:
+    add_new_file_name()
+else:
+    for n,file in enumerate(list_files,start=1):
+        print("{0}. {1}".format(n,file))
+    number_file = get_integer("Choose number or '"'0'"' for add new file ", "number_file")
+if number_file==0:
+    add_new_file_name()
+    read_record_file(add_new_file_name)
