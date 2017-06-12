@@ -63,11 +63,15 @@ def read_record_file(filename):
             continue
         elif action_items in {"s", "S"}:
             fh = None
-            try:
-                fh = open(filename, "w", encoding="utf-8")
+            fh = open(filename, "w", encoding="utf-8")
                 for l, item in enumerate(list_items,start=1):
                     fh.write("{0}. {1}\n".format(l,item))
+                print("Saved {0} items to {1}".format(l,filename))
                 action_items=get_string("Press Enter to continue... ", "add_string")
+                if action_items is not None:
+                    for l, item in enumerate(list_items,start=1):
+                        print("{0}. {1}".format(l,item))
+                    action_items=get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
             except EnvironmentError as err:
                 print("ERROR", err)
             finally:
