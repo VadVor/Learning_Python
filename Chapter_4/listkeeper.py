@@ -33,22 +33,48 @@ def add_new_file_name():
     print("\n--No items are in the list--")
     return filename                    
 
-def read_record_file(add_new_file_name):
+def read_record_file(filename):
     new_file = get_string("[A]dd [Q]uit", "new_file", default="a")
     list_items= []
     action_items= None
     while True:
-        if new_file in {"a", "A"} or action_items in {"a", "A"} :
+        if new_file in {"a", "A"}:
             add_string=get_string("Add item ", "add_string")
             list_items.append(add_string)
             for l, item in enumerate(list_items,start=1):
                 print("{0}. {1}".format(l,item))
             action_items=get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
-            return True
+            new_file = None
+            continue
+        elif action_items in {"a", "A"}:
+            add_string=get_string("Add item ", "add_string")
+            list_items.append(add_string)
+            for l, item in enumerate(list_items,start=1):
+                print("{0}. {1}".format(l,item))
+            action_items=get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
+            continue
         elif action_items in {"d", "D"}:
             del_string=get_string("Delete item number (or 0 to cancel)", "del_string")
-            
-        
+            list_items.pop(int(del_string)-1)
+            for l, item in enumerate(list_items,start=1):
+                if len(list_items) >= 1:
+                    print("{0}. {1}".format(l,item))
+            action_items=get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
+            continue
+        elif action_items in {"s", "S"}:
+            fh = None
+            try:
+                fh = open(filename, "w", encoding="utf-8")
+                for l, item in enumerate(list_items,start=1):
+                    fh.write("{0}. {1}\n".format(l,item))
+                action_items=get_string("Press Enter to continue... ", "add_string")
+            except EnvironmentError as err:
+                print("ERROR", err)
+            finally:
+                if fh is not None:
+                    fh.close()
+                    print("Saved {0} items to {1}".format(l,filename))
+            continue
     return True
     
 list_files = [name for name in os.listdir(".") if name.endswith(".lst")]
@@ -59,5 +85,5 @@ else:
         print("{0}. {1}".format(n,file))
     number_file = get_integer("Choose number or '"'0'"' for add new file ", "number_file")
 if number_file==0:
-    add_new_file_name()
-    read_record_file(add_new_file_name)
+    filename = add_new_file_name()
+    read_record_file(filename)
