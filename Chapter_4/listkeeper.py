@@ -97,8 +97,8 @@ def read_record_file(file_name, action_items):
             try:
                 fh = open(file_name, "w", encoding="utf-8")
                 for l, item in enumerate(list_items, start=1):
-                    fh.write("{0}. {1}\n".format(l, item))
-                print("Saved {0} items to {1}".format(l, filename))
+                    fh.write("{1}\n".format(l, item))
+                print("Saved {0} items to {1}".format(l, file_name))
                 action_items = get_string("Press Enter to continue...", "add_string")
                 print("\n")
                 if action_items is not None:
@@ -112,15 +112,29 @@ def read_record_file(file_name, action_items):
                     saved = True
                     action_items = get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
             continue
+        elif action_items in {"o"}:
+            try:
+                for line in open(file_name, "r", encoding="utf-8"):
+                    list_items.append(line.rstrip())
+                for l, item in enumerate(list_items, start=1):
+                    print("{0}. {1}".format(l, item))
+            except EnvironmentError as err:
+                print("ERROR", err)
+            finally:
+                    saved = True
+                    action_items = get_string("[A]dd [D]elete [Q]uit ", "add_string", default="a")
+            continue
         elif action_items in {"q", "Q"}:
             if saved == True:
                 break
             elif saved == False:
                 answer = get_string("Saved unseved changes (y/n)", "answer",default="y")
                 if answer in {"y", "Y"}:
+                    fh = file_name
+                    fh = open(file_name, "w", encoding="utf-8")
                     for l, item in enumerate(list_items, start=1):
                         fh.write("{0}. {1}\n".format(l, item))
-                    print("Saved {0} items to {1}".format(l, filename))
+                    print("Saved {0} items to {1}".format(l, file_name))
                     fh.close()
                     break
                 else:
@@ -141,4 +155,4 @@ else:
         filename, action_asw = add_new_file_name()
         read_record_file(filename, action_asw)
     else:
-        read_record_file("".join(list_files[number_file-1]))
+        read_record_file("".join(list_files[number_file-1]), action_items = "o")
