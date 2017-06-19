@@ -52,7 +52,7 @@ def get_integer(message, name="integer", default=None, minimum=0, maximum=100, a
             print("ERROR {0} must be an integer".format(name))
 
 
-def add_new_file_name(file_name,action):
+def add_new_file_name(file_name=None):
     if not file_name:
         file_name = get_string("Choose file name: ", "filename")
         if not file_name:
@@ -69,15 +69,17 @@ def read_record_file(file_name, action_items):
     saved = None
     while True:
         try:
-            if action_items in {"a", "A"}: # добавление элемента
+            if action_items in {"a", "A"}:  # добавление элемента
                 add_string = get_string("Add item ", "add_string")
                 list_items.append(add_string)
                 for l, item in enumerate(sorted(list_items, key=str.lower), start=1):
-                    print("{0}. {1}".format(l, item))
+                    print("{0:>{2}}: {1}".format(str(l), item, (lambda: 1 if len(list_items) < 10 else 2
+                                                                        if len(list_items) < 100 else 3)()))
+                    # print("{0:.2}. {1}".format(str(l), item))
                 saved = False
                 action_items = get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
                 continue
-            elif action_items in {"d", "D"}: # удаление элимента
+            elif action_items in {"d", "D"}:  # удаление элимента
                 del_string = get_integer("Delete item number (or 0 to cancel)", "del_string")
                 if del_string > 0:
                     list_items.pop(del_string-1)
@@ -94,7 +96,7 @@ def read_record_file(file_name, action_items):
                     saved = False
                     action_items = get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
                     continue
-            elif action_items in {"s", "S"}: #запись элементов
+            elif action_items in {"s", "S"}:  # запись элементов
                 fh = None
                 try:
                     fh = open(file_name, "w", encoding="utf-8")
@@ -114,25 +116,25 @@ def read_record_file(file_name, action_items):
                         saved = True
                         action_items = get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
                 continue
-            elif action_items in {"o"}: # чтение записей файла
+            elif action_items in {"o"}:  # чтение записей файла
                 try:
                     for line in open(file_name, "r", encoding="utf-8"):
                         list_items.append(line.rstrip())
-                    for l, item in enumerate(sorted(list_items,key = str.lower), start=1):
-                        print("{0}. {1}".format(l, item))
+                    for l, item in enumerate(sorted(list_items, key=str.lower), start=1):
+                        print("{0:>{2}}: {1}".format(str(l), item, (lambda: 1 if len(list_items) < 10 else 2
+                                                                                if len(list_items) < 100 else 3)()))
                 except EnvironmentError as err:
                     print("ERROR", err)
                 finally:
                     saved = True
                     action_items = get_string("[A]dd [D]elete [Q]uit ", "add_string", default="a")
                 continue
-            elif action_items in {"q", "Q"}: # выход из программы
-                if saved == True:
+            elif action_items in {"q", "Q"}:  # выход из программы
+                if saved:
                     break
-                elif saved == False:
-                    answer = get_string("Saved unseved changes (y/n)", "answer",default="y")
+                elif not saved:
+                    answer = get_string("Saved unseved changes (y/n)", "answer", default="y")
                     if answer in {"y", "Y"}:
-                        fh = file_name
                         fh = open(file_name, "w", encoding="utf-8")
                         for l, item in enumerate(list_items, start=1):
                             fh.write("{1}\n".format(l, item))
@@ -150,30 +152,31 @@ def read_record_file(file_name, action_items):
                     action_items = get_string("[A]dd [D]elete [S]ave [Q]uit ", "add_string", default="a")
         except ValueError as err:
             print(err)
-            
+
+
 def main():
     while True:
-        number_file = 0
         list_files = [name for name in os.listdir(".") if name.endswith(".lst")]
         if len(list_files) == 0:
             filename = add_new_file_name()
-            read_record_file(filename)
+            read_record_file(filename, action_items="a")
         else:
             for n, file in enumerate(list_files, start=1):
-                print("{0}. {1}".format(n, file))
+                print("{0:>{2}}: {1}".format(str(n), file, (lambda: 1 if len(list_files) < 10 else 2
+                                                                                if len(list_files) < 100 else 3)()))
             number_file = get_integer("Choose number or '"'0'"' for add new file ", "number_file")
             if number_file == 0:
                 filename, action_asw = add_new_file_name()
                 read_record_file(filename, action_asw)
             else:
                 if os.stat(list_files[number_file-1]).st_size == 0: 
-                    filename, action_asw = add_new_file_name(list_files[number_file-1],action="a")
+                    filename, action_asw = add_new_file_name(list_files[number_file-1])
                     if action_asw in {"A", "a"}:
-                        read_record_file("".join(list_files[number_file-1]), action_items = "a")
+                        read_record_file("".join(list_files[number_file-1]), action_items="a")
                         break
                     else:
                         break
                 else:
-                    read_record_file("".join(list_files[number_file-1]), action_items = "o")
+                    read_record_file("".join(list_files[number_file-1]), action_items="o")
                     break
 main()
