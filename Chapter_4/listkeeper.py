@@ -73,7 +73,7 @@ def read_record_file(file_name, action_items):
                 add_string = get_string("Add item ", "add_string")
                 list_items.append(add_string)
                 for l, item in enumerate(sorted(list_items, key=str.lower), start=1):
-                    print("{0:>{2}}: {1}".format(str(l), item, (lambda: 1 if len(list_items) < 10 else 2
+                    print("{0:.{2}}: {1}".format(str(l), item, (lambda: 1 if len(list_items) < 10 else 2
                                                                         if len(list_items) < 100 else 3)()))
                     # print("{0:.2}. {1}".format(str(l), item))
                 saved = False
@@ -121,7 +121,7 @@ def read_record_file(file_name, action_items):
                     for line in open(file_name, "r", encoding="utf-8"):
                         list_items.append(line.rstrip())
                     for l, item in enumerate(sorted(list_items, key=str.lower), start=1):
-                        print("{0:>{2}}: {1}".format(str(l), item, (lambda: 1 if len(list_items) < 10 else 2
+                        print("{0:.{2}}: {1}".format(str(l), item, (lambda: 1 if len(list_items) < 10 else 2
                                                                                 if len(list_items) < 100 else 3)()))
                 except EnvironmentError as err:
                     print("ERROR", err)
@@ -162,7 +162,7 @@ def main():
             read_record_file(filename, action_items="a")
         else:
             for n, file in enumerate(list_files, start=1):
-                print("{0:>{2}}: {1}".format(str(n), file, (lambda: 1 if len(list_files) < 10 else 2
+                print("{0:.{2}}: {1}".format(str(n), file, (lambda: 1 if len(list_files) < 10 else 2
                                                                                 if len(list_files) < 100 else 3)()))
             number_file = get_integer("Choose number or '"'0'"' for add new file ", "number_file")
             if number_file == 0:
