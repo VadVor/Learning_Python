@@ -32,7 +32,7 @@ def simplify(text, whitespace=string.whitespace, delete=""):
     """
 
     result = []
-    word = ""
+    word = ''
     for char in text:
         if char in delete:
             continue
