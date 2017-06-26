@@ -8,6 +8,7 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
+from ctypes.wintypes import CHAR
 
 """
 This module provides functionality for writing characters on a grid.
@@ -91,5 +92,32 @@ def resize(max_rows, max_columns, char=None):
         _background_char = char
     _max_rows = max_rows
     _max_columns = max_columns
-    _grid = [[_background_char for column in range(_max_columns)]
-             for row in range(_max_rows)]
+    _grid = [[_background_char for column in range(_max_columns)]for row in range(_max_rows)]
+    
+    
+def add_horizontal_line(row, column0, column1, char="-"):
+    """ Добавляет в сетку горизонтальную линию, используя указанный символ
+    
+    >>> add_horizontal_line(8, 20, 25, "=")
+    >>> char_at(8, 20) == char_at(8, 24) == "="
+    True
+    >>> add_horizontal_line(31, 11, 12)
+    Trackback (most recent call last):
+    ...
+    RowRangeError
+    """
+    assert len(char) == 1, _CHAR_ASSERT_TEMPLATE.format(char)
+    try:
+        for column in range(column0, column1):
+            _grid[row][column] = char
+    except IndexError:
+        if not 0 <= row <= _max_rows:
+            raise RowRangeError()
+        raise ColumnRangeError()
+
+resize(_max_rows, _max_columns)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
