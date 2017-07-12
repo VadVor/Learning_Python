@@ -3,7 +3,7 @@ import datetime
 import argparse
 
 
-parser = argparse.ArgumentParser(description='The paths are optional; if not given . is used.', 
+parser = argparse.ArgumentParser(description='The paths are optional; if not given current dir is used.', 
                                  usage='%(prog)s [options] [path1 [path2 [...pathN]]]')
 parser.add_argument('-H', '--hidden', required=False, action='store_true', help="show hidden files [default: off]")
 parser.add_argument('-m', '--modified', required=False, action='store_true',
