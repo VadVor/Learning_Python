@@ -1,6 +1,7 @@
 import os.path
 import datetime
 import argparse
+import win32api
 
 
 parser = argparse.ArgumentParser(description='The paths are optional; if not given current dir is used.', 
@@ -20,13 +21,30 @@ for path in args.path:
     files = []
     root = []
     data = []
+    count_files = 0
     for root, dirs, files in os.walk(path):
         dirs[:] = [directory for directory in dirs if not directory.startswith(".")]
-        for filename in files:
-            fullname = os.path.join(root, filename)
-            mod_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(fullname))
-            data.append((mod_timestamp, os.path.getsize(fullname), fullname))
-        break
+        if args.recursive is False:
+            for filename in files:
+                fullname = os.path.join(root, filename)
+                attribute = win32api.GetFileAttributes(fullname)
+                mod_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(fullname))
+                if attribute==32 and args.hidden is False:
+                    data.append((mod_timestamp, os.path.getsize(fullname), fullname))
+                elif args.hidden is True:
+                    data.append((mod_timestamp, os.path.getsize(fullname), fullname))
+                count_files+= 1
+            break
+        else:
+            for filename in files:
+                fullname = os.path.join(root, filename)
+                attribute = win32api.GetFileAttributes(fullname)
+                mod_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(fullname))
+                if attribute==32 and args.hidden is False:
+                    data.append((mod_timestamp, os.path.getsize(fullname), fullname))
+                elif args.hidden is True:
+                    data.append((mod_timestamp, os.path.getsize(fullname), fullname))
+                count_files+= 1
     if args.order in ("modified", "m"):
         data.sort(key=lambda tup: tup[0])
     elif args.order in ("size", "s"):
@@ -38,8 +56,9 @@ for path in args.path:
                                              (lambda: "" if args.sizes is False else datta[1])(), datta[2]))
     for directory in dirs:
         print("                                  "+path+directory)
-    print("{0} file{1},".format(len(files), (lambda: "" if len(files) == 1 else "s")()), end=" ")
-    print("{0} director{1}".format(len(dirs), (lambda: "y" if len(dirs) == 1 else "ies")()))
+    print("{0} file{1},".format(count_files, (lambda: "" if count_files == 1 else "s")()), end=" ")
+    if args.recursive is False:
+        print("{0} director{1}".format(len(dirs), (lambda: "y" if len(dirs) == 1 else  "ies")()))
     print()
 
 # parser.print_help()
