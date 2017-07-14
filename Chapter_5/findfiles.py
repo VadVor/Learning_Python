@@ -1,8 +1,19 @@
 import os.path
 import datetime
 import argparse
-import win32api
+import win32api, win32con
+import locale
 
+
+def folder_is_hidden(directory):
+    p=path+"\\"+directory
+    if os.name== 'nt':
+        attribute = win32api.GetFileAttributes(p)
+        return attribute & (win32con.FILE_ATTRIBUTE_HIDDEN | win32con.FILE_ATTRIBUTE_SYSTEM)
+    else:
+        return p.startswith('.') #linux-osx
+
+locale.setlocale(locale.LC_ALL, "eng") 
 
 parser = argparse.ArgumentParser(description='The paths are optional; if not given current dir is used.', 
                                  usage='%(prog)s [options] [path1 [path2 [...pathN]]]')
@@ -14,7 +25,7 @@ parser.add_argument('-o', '--order', default="name", type=str,
 parser.add_argument('-r', '--recursive', required=False, action='store_true',
                     help="recurse into subdirectories [default: off]")
 parser.add_argument('-s', '--sizes', required=False, action='store_true', help="show sizes [default: off]")
-parser.add_argument('path', default=os.getcwd(), nargs='+')
+parser.add_argument('path',default='d:\\vadim\\', nargs='*')
 args = parser.parse_args()
 for path in args.path:
     dirs = []
@@ -23,17 +34,18 @@ for path in args.path:
     data = []
     count_files = 0
     for root, dirs, files in os.walk(path):
-        dirs[:] = [directory for directory in dirs if not directory.startswith(".")]
         if args.recursive is False:
+            dirs[:] = [directory for directory in dirs if not folder_is_hidden(directory)]
             for filename in files:
                 fullname = os.path.join(root, filename)
                 attribute = win32api.GetFileAttributes(fullname)
                 mod_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(fullname))
                 if attribute==32 and args.hidden is False:
                     data.append((mod_timestamp, os.path.getsize(fullname), fullname))
+                    count_files+= 1
                 elif args.hidden is True:
                     data.append((mod_timestamp, os.path.getsize(fullname), fullname))
-                count_files+= 1
+                    count_files+= 1
             break
         else:
             for filename in files:
@@ -42,9 +54,10 @@ for path in args.path:
                 mod_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(fullname))
                 if attribute==32 and args.hidden is False:
                     data.append((mod_timestamp, os.path.getsize(fullname), fullname))
+                    count_files+= 1
                 elif args.hidden is True:
                     data.append((mod_timestamp, os.path.getsize(fullname), fullname))
-                count_files+= 1
+                    count_files+= 1
     if args.order in ("modified", "m"):
         data.sort(key=lambda tup: tup[0])
     elif args.order in ("size", "s"):
@@ -52,7 +65,7 @@ for path in args.path:
     else:
         data.sort(key=lambda tup: tup[2])   
     for datta in data:
-        print("{0:.19}   {1:>10}  {2:<} ".format((lambda: "" if args.modified is False else str(datta[0]))(),
+        print("{0:.19}   {1:>12n}  {2:<} ".format((lambda: "" if args.modified is False else str(datta[0]))(),
                                              (lambda: "" if args.sizes is False else datta[1])(), datta[2]))
     for directory in dirs:
         print("                                  "+path+directory)
