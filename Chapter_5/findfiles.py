@@ -25,8 +25,10 @@ parser.add_argument('-o', '--order', default="name", type=str,
 parser.add_argument('-r', '--recursive', required=False, action='store_true',
                     help="recurse into subdirectories [default: off]")
 parser.add_argument('-s', '--sizes', required=False, action='store_true', help="show sizes [default: off]")
-parser.add_argument('path',default='d:\\vadim\\', nargs='*')
+parser.add_argument('path',default=os.getcwd(), nargs='*')
 args = parser.parse_args()
+if isinstance(args.path, str) is True:
+    args.path = args.path.split()
 for path in args.path:
     dirs = []
     files = []
