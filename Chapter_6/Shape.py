@@ -24,9 +24,20 @@ class Circle(Point):
         super().__init__(x, y)
         self.radius = radius
     
-    def edge_distance_from_origin(self):
-        return abs(self.distance_from_origin()-self.radius)
+    @property
+    def radius(self):
+        return self.__radius
     
+    @radius.setter
+    def radius(self, radius):
+        assert radius > 0, "Radius must be nonzero and non-negative"
+        self.__radius = radius
+            
+    @property
+    def edge_distance_from_origin(self):
+        return abs(self.distance_from_origin-self.radius)
+    
+    @property
     def area(self):
         return math.pi * (self.radius ** 2)
     
@@ -42,3 +53,6 @@ class Circle(Point):
     def __str__(self):
         return repr(self)
     
+
+    
+        
