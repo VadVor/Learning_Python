@@ -42,6 +42,10 @@ class FuzzyBool:
     
     @staticmethod
     def conjunction(*fuzzies):
+        """
+
+        :rtype: object
+        """
         return FuzzyBool(min([float(x) for x in fuzzies]))
     
     

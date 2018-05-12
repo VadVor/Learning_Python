@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import math
 
 
@@ -7,6 +6,7 @@ class Point:
         self.x = x
         self.y = y
 
+    @property
     def distance_from_origin(self):
         return math.hypot(self.x, self.y)
 
@@ -19,7 +19,9 @@ class Point:
     def __str__(self):
         return "({0.x!r}, {0.y!r})".format(self)
 
+
 class Circle(Point):
+
     def __init__(self, radius, x=0, y=0):
         super().__init__(x, y)
         self.radius = radius
@@ -35,7 +37,7 @@ class Circle(Point):
             
     @property
     def edge_distance_from_origin(self):
-        return abs(self.distance_from_origin-self.radius)
+        return abs(self.distance_from_origin - self.radius)
     
     @property
     def area(self):
@@ -52,7 +54,10 @@ class Circle(Point):
     
     def __str__(self):
         return repr(self)
-    
 
-    
-        
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
+
